@@ -1,21 +1,18 @@
 import { model, Schema } from 'mongoose';
-import { TContact } from './contact.interface';
+import { ICategory } from './category.interface';
 
-const contactSchema = new Schema<TContact>(
+const categorySchema = new Schema<ICategory>(
       {
             name: {
                   type: String,
                   required: true,
+                  unique: true,
             },
-            email: {
+            categoryImage: {
                   type: String,
                   required: true,
             },
-            subject: {
-                  type: String,
-                  required: true,
-            },
-            message: {
+            occasionImage: {
                   type: String,
                   required: true,
             },
@@ -25,4 +22,4 @@ const contactSchema = new Schema<TContact>(
       }
 );
 
-export const Contact = model<TContact>('Contact', contactSchema);
+export const Category = model<ICategory>('Category', categorySchema);

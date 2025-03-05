@@ -27,6 +27,13 @@ const fileUploadHandler = () => {
                         case 'image':
                               uploadDir = path.join(baseUploadDir, 'images');
                               break;
+                        case 'categoryImage':
+                              uploadDir = path.join(baseUploadDir, 'categories');
+                              break;
+                        case 'occasionImage':
+                              uploadDir = path.join(baseUploadDir, 'occasions');
+                              break;
+
                         case 'media':
                               uploadDir = path.join(baseUploadDir, 'medias');
                               break;
@@ -41,20 +48,15 @@ const fileUploadHandler = () => {
             },
             filename: (req, file, cb) => {
                   const fileExt = path.extname(file.originalname);
-                  const fileName =
-                        file.originalname.replace(fileExt, '').toLowerCase().split(' ').join('-') + '-' + Date.now();
+                  const fileName = file.originalname.replace(fileExt, '').toLowerCase().split(' ').join('-') + '-' + Date.now();
                   cb(null, fileName + fileExt);
             },
       });
 
       //file filter
       const filterFilter = (req: Request, file: any, cb: FileFilterCallback) => {
-            if (file.fieldname === 'image') {
-                  if (
-                        file.mimetype === 'image/jpeg' ||
-                        file.mimetype === 'image/png' ||
-                        file.mimetype === 'image/jpg'
-                  ) {
+            if (file.fieldname === 'image' || file.fieldname === 'categoryImage' || file.fieldname === 'occasionImage') {
+                  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
                         cb(null, true);
                   } else {
                         throw new ApiError(StatusCodes.BAD_REQUEST, 'Only .jpeg, .png, .jpg file supported');
@@ -81,6 +83,8 @@ const fileUploadHandler = () => {
             fileFilter: filterFilter,
       }).fields([
             { name: 'image', maxCount: 3 },
+            { name: 'categoryImage', maxCount: 5 },
+            { name: 'occasionImage', maxCount: 5 },
             { name: 'media', maxCount: 3 },
             { name: 'doc', maxCount: 3 },
       ]);
