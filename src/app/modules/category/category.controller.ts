@@ -21,6 +21,27 @@ const createCategory = catchAsync(async (req, res) => {
             data: result,
       });
 });
+
+const updateCategory = catchAsync(async (req, res) => {
+      const { id } = req.params;
+
+      if (req.files && 'categoryImage' in req.files) {
+            req.body.categoryImage = `http://${config.ip_address}:${config.port}/categories/${req.files.categoryImage[0].filename}`;
+      }
+      if (req.files && 'occasionImage' in req.files) {
+            req.body.occasionImage = `http://${config.ip_address}:${config.port}/occasions/${req.files.occasionImage[0].filename}`;
+      }
+
+      const { ...categoryData } = req.body;
+
+      const result = await CategoryService.updateCategoryToDB(id, categoryData);
+      sendResponse(res, {
+            statusCode: StatusCodes.OK,
+            success: true,
+            message: 'Category updated successfully',
+            data: result,
+      });
+});
 const getAllCategories = catchAsync(async (req, res) => {
       const result = await CategoryService.getAllCategoriesFromDB();
       sendResponse(res, {
@@ -33,5 +54,6 @@ const getAllCategories = catchAsync(async (req, res) => {
 
 export const CategoryController = {
       createCategory,
+      updateCategory,
       getAllCategories,
 };

@@ -8,6 +8,15 @@ const createCategoryToDB = async (payload: ICategory) => {
       }
       return result;
 };
+const updateCategoryToDB = async (id: string, payload: Partial<ICategory>) => {
+      const result = await Category.findOneAndUpdate({ _id: id }, payload, {
+            new: true,
+      });
+      if (!result) {
+            throw new Error('Failed to update category');
+      }
+      return result;
+};
 const getAllCategoriesFromDB = async () => {
       const result = await Category.find();
       if (!result) {
@@ -19,4 +28,5 @@ const getAllCategoriesFromDB = async () => {
 export const CategoryService = {
       createCategoryToDB,
       getAllCategoriesFromDB,
+      updateCategoryToDB,
 };

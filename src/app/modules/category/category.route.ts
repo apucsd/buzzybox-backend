@@ -7,4 +7,5 @@ const router = Router();
 router.post('/create-category', fileUploadHandler(), CategoryController.createCategory);
 router.get('/', CategoryController.getAllCategories);
 
+router.patch('/:id', fileUploadHandler(), CategoryController.updateCategory);
 export const CategoryRoutes = router;
