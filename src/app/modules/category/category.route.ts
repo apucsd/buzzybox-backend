@@ -8,4 +8,5 @@ router.post('/create-category', fileUploadHandler(), CategoryController.createCa
 router.get('/', CategoryController.getAllCategories);
 
 router.patch('/:id', fileUploadHandler(), CategoryController.updateCategory);
+router.delete('/:id', CategoryController.deleteCategory);
 export const CategoryRoutes = router;

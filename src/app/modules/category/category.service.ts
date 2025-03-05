@@ -24,9 +24,17 @@ const getAllCategoriesFromDB = async () => {
       }
       return result;
 };
+const deleteCategoryFromDB = async (id: string) => {
+      const result = await Category.findOneAndDelete({ _id: id });
+      if (!result) {
+            throw new Error('This category is not found');
+      }
+      return result;
+};
 
 export const CategoryService = {
       createCategoryToDB,
       getAllCategoriesFromDB,
       updateCategoryToDB,
+      deleteCategoryFromDB,
 };
