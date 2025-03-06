@@ -3,13 +3,14 @@ import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { CategoryService } from './category.service';
 import config from '../../../config';
+import unlinkFile from '../../../shared/unlinkFile';
 
 const createCategory = catchAsync(async (req, res) => {
       if (req.files && 'categoryImage' in req.files) {
-            req.body.categoryImage = `http://${config.ip_address}:${config.port}/categories/${req.files.categoryImage[0].filename}`;
+            req.body.categoryImage = `/categories/${req.files.categoryImage[0].filename}`;
       }
       if (req.files && 'occasionImage' in req.files) {
-            req.body.occasionImage = `http://${config.ip_address}:${config.port}/occasions/${req.files.occasionImage[0].filename}`;
+            req.body.occasionImage = `/occasions/${req.files.occasionImage[0].filename}`;
       }
 
       const { ...categoryData } = req.body;
@@ -24,17 +25,9 @@ const createCategory = catchAsync(async (req, res) => {
 
 const updateCategory = catchAsync(async (req, res) => {
       const { id } = req.params;
-
-      if (req.files && 'categoryImage' in req.files) {
-            req.body.categoryImage = `http://${config.ip_address}:${config.port}/categories/${req.files.categoryImage[0].filename}`;
-      }
-      if (req.files && 'occasionImage' in req.files) {
-            req.body.occasionImage = `http://${config.ip_address}:${config.port}/occasions/${req.files.occasionImage[0].filename}`;
-      }
-
       const { ...categoryData } = req.body;
 
-      const result = await CategoryService.updateCategoryToDB(id, categoryData);
+      const result = await CategoryService.updateCategoryToDB(id, categoryData, req.files);
       sendResponse(res, {
             statusCode: StatusCodes.OK,
             success: true,
