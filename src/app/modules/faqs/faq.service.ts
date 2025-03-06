@@ -1,3 +1,4 @@
+import QueryBuilder from '../../../builder/QueryBuilder';
 import { IFAQ } from './faq.interface';
 import { FAQ } from './faq.model';
 
@@ -29,12 +30,15 @@ const updateFAQToDB = async (id: string, payload: Partial<IFAQ>) => {
       return result;
 };
 
-const getAllFAQsFromDB = async () => {
-      const result = await FAQ.find();
+const getAllFAQsFromDB = async (query: Record<string, any>) => {
+      const faqQuery = await new QueryBuilder(FAQ.find(), query).search(['question', 'answer']).filter().paginate().sort().fields();
+      const meta = await faqQuery.countTotal();
+      const result = await faqQuery.modelQuery;
+
       if (!result) {
             throw new Error('Failed to get FAQs');
       }
-      return result;
+      return { result, meta };
 };
 
 const getActiveFAQsFromDB = async () => {

@@ -28,12 +28,15 @@ const updateFAQ = catchAsync(async (req, res) => {
 });
 
 const getAllFAQs = catchAsync(async (req, res) => {
-      const result = await FAQService.getAllFAQsFromDB();
+      const { result, meta } = await FAQService.getAllFAQsFromDB(req.query);
       sendResponse(res, {
             statusCode: StatusCodes.OK,
             success: true,
             message: 'FAQs fetched successfully',
-            data: result,
+            data: {
+                  data: result,
+                  meta,
+            },
       });
 });
 
