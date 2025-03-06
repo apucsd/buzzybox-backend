@@ -36,7 +36,9 @@ const fileUploadHandler = () => {
                         case 'occasionImage':
                               uploadDir = path.join(baseUploadDir, 'occasions');
                               break;
-
+                        case 'howItWorksImage':
+                              uploadDir = path.join(baseUploadDir, 'how-it-works');
+                              break;
                         case 'media':
                               uploadDir = path.join(baseUploadDir, 'medias');
                               break;
@@ -62,7 +64,8 @@ const fileUploadHandler = () => {
                   file.fieldname === 'image' ||
                   file.fieldname === 'categoryImage' ||
                   file.fieldname === 'occasionImage' ||
-                  file.fieldname === 'aboutImage'
+                  file.fieldname === 'aboutImage' ||
+                  file.fieldname === 'howItWorksImage'
             ) {
                   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
                         cb(null, true);
@@ -94,6 +97,7 @@ const fileUploadHandler = () => {
             { name: 'categoryImage', maxCount: 1 },
             { name: 'occasionImage', maxCount: 1 },
             { name: 'aboutImage', maxCount: 1 },
+            { name: 'howItWorksImage', maxCount: 1 },
             { name: 'media', maxCount: 3 },
             { name: 'doc', maxCount: 3 },
       ]);
