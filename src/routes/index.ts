@@ -7,6 +7,7 @@ import { AboutRoutes } from '../app/modules/about/about.route';
 import { FAQRoutes } from '../app/modules/faqs/faq.route';
 import { HowItWorksRoutes } from '../app/modules/how-it-works/how-it-works.route';
 import { ContactInfoRoutes } from '../app/modules/contact-info/contact-info.route';
+import { ReviewRoutes } from '../app/modules/review/review.route';
 
 const router = express.Router();
 
@@ -42,6 +43,10 @@ const apiRoutes = [
       {
             path: '/contact-info',
             route: ContactInfoRoutes,
+      },
+      {
+            path: '/reviews',
+            route: ReviewRoutes,
       },
 ];
 
