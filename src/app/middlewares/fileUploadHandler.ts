@@ -30,6 +30,9 @@ const fileUploadHandler = () => {
                         case 'categoryImage':
                               uploadDir = path.join(baseUploadDir, 'categories');
                               break;
+                        case 'aboutImage':
+                              uploadDir = path.join(baseUploadDir, 'about');
+                              break;
                         case 'occasionImage':
                               uploadDir = path.join(baseUploadDir, 'occasions');
                               break;
@@ -55,7 +58,12 @@ const fileUploadHandler = () => {
 
       //file filter
       const filterFilter = (req: Request, file: any, cb: FileFilterCallback) => {
-            if (file.fieldname === 'image' || file.fieldname === 'categoryImage' || file.fieldname === 'occasionImage') {
+            if (
+                  file.fieldname === 'image' ||
+                  file.fieldname === 'categoryImage' ||
+                  file.fieldname === 'occasionImage' ||
+                  file.fieldname === 'aboutImage'
+            ) {
                   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
                         cb(null, true);
                   } else {
@@ -83,8 +91,9 @@ const fileUploadHandler = () => {
             fileFilter: filterFilter,
       }).fields([
             { name: 'image', maxCount: 3 },
-            { name: 'categoryImage', maxCount: 5 },
-            { name: 'occasionImage', maxCount: 5 },
+            { name: 'categoryImage', maxCount: 1 },
+            { name: 'occasionImage', maxCount: 1 },
+            { name: 'aboutImage', maxCount: 1 },
             { name: 'media', maxCount: 3 },
             { name: 'doc', maxCount: 3 },
       ]);
