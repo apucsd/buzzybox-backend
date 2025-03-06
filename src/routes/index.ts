@@ -6,6 +6,7 @@ import { CategoryRoutes } from '../app/modules/category/category.route';
 import { AboutRoutes } from '../app/modules/about/about.route';
 import { FAQRoutes } from '../app/modules/faqs/faq.route';
 import { HowItWorksRoutes } from '../app/modules/how-it-works/how-it-works.route';
+import { ContactInfoRoutes } from '../app/modules/contact-info/contact-info.route';
 
 const router = express.Router();
 
@@ -37,6 +38,10 @@ const apiRoutes = [
       {
             path: '/how-it-works',
             route: HowItWorksRoutes,
+      },
+      {
+            path: '/contact-info',
+            route: ContactInfoRoutes,
       },
 ];
 
