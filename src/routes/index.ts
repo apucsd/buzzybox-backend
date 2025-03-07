@@ -8,6 +8,7 @@ import { FAQRoutes } from '../app/modules/faqs/faq.route';
 import { HowItWorksRoutes } from '../app/modules/how-it-works/how-it-works.route';
 import { ContactInfoRoutes } from '../app/modules/contact-info/contact-info.route';
 import { ReviewRoutes } from '../app/modules/review/review.route';
+import { PaymentRoutes } from '../app/modules/payment/payment.route';
 
 const router = express.Router();
 
@@ -47,6 +48,10 @@ const apiRoutes = [
       {
             path: '/reviews',
             route: ReviewRoutes,
+      },
+      {
+            path: '/payments',
+            route: PaymentRoutes,
       },
 ];
 

@@ -8,7 +8,7 @@ export default {
       node_env: process.env.NODE_ENV,
       port: process.env.PORT,
       bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
-      stripe_secret_key: process.env.stripe_secret_key,
+      stripe_secret_key: process.env.STRIPE_SECRET_KEY,
       super_admin_name: process.env.SUPER_ADMIN_NAME,
       super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
       super_admin_email: process.env.SUPER_ADMIN_EMAIL,
@@ -28,6 +28,7 @@ export default {
 
       stripe: {
             secret_key: process.env.STRIPE_SECRET_KEY,
+            public_key: process.env.STRIPE_PUBLIC_KEY,
             webhook_secret: process.env.STRIPE_WEBHOOK_SECRET,
       },
 };
