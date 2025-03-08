@@ -96,6 +96,14 @@ const createCheckoutSession = async (giftCardId: string) => {
       };
 };
 
+const getGiftCardByUniqueId = async (id: string) => {
+      const result = await GiftCard.findOne({ uniqueId: id });
+      if (!result) {
+            throw new Error('Gift card not found');
+      }
+      return result;
+};
+
 const getAllGiftCardsFromDB = async (): Promise<IGiftCard[]> => {
       const result = await GiftCard.find({ paymentStatus: 'paid' });
       if (!result) {
@@ -121,4 +129,5 @@ export const GiftCardService = {
       removePageFromGiftCard,
       createCheckoutSession,
       getMyGiftCardsFromDB,
+      getGiftCardByUniqueId,
 };

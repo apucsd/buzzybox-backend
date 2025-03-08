@@ -42,6 +42,16 @@ const createCheckoutSession = catchAsync(async (req, res) => {
       });
 });
 
+const getGiftCardByUniqueId = catchAsync(async (req, res) => {
+      const { id } = req.params;
+      const result = await GiftCardService.getGiftCardByUniqueId(id);
+      res.status(200).json({
+            success: true,
+            message: 'Gift card fetched successfully',
+            data: result,
+      });
+});
+
 const getAllGiftCards = catchAsync(async (req, res) => {
       const result = await GiftCardService.getAllGiftCardsFromDB();
       res.status(200).json({
@@ -68,4 +78,5 @@ export const GiftCardController = {
       removePage,
       createCheckoutSession,
       getMyGiftCards,
+      getGiftCardByUniqueId,
 };
