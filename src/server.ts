@@ -16,6 +16,7 @@ process.on('uncaughtException', (error) => {
 let server: any;
 async function main() {
       try {
+            //database
             mongoose.connect(config.database_url as string);
             logger.info(colors.bgCyan('🚀 Database connected successfully'));
             seedSuperAdmin();
