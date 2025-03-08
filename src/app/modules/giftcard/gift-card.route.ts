@@ -11,6 +11,7 @@ router.post('/create-checkout-session', auth(USER_ROLES.USER), GiftCardControlle
 router.patch('/add-new-page/:id', fileUploadHandler(), GiftCardController.updateGiftCard);
 router.patch('/remove-page/:id', GiftCardController.removePage);
 
+router.get('/my-cards', auth(USER_ROLES.USER), GiftCardController.getMyGiftCards);
 router.get('/', GiftCardController.getAllGiftCards);
 
 export const GiftCardRoutes = router;

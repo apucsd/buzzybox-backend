@@ -97,9 +97,19 @@ const createCheckoutSession = async (giftCardId: string) => {
 };
 
 const getAllGiftCardsFromDB = async (): Promise<IGiftCard[]> => {
-      const result = await GiftCard.find();
+      const result = await GiftCard.find({ paymentStatus: 'paid' });
       if (!result) {
             throw new Error('Failed to get gift cards');
+      }
+      return result;
+};
+
+const getMyGiftCardsFromDB = async (userId: string) => {
+      console.log(userId);
+      const result = await GiftCard.find({ userId, paymentStatus: 'paid' });
+
+      if (!result) {
+            throw new Error('Failed to get my gift cards');
       }
       return result;
 };
@@ -110,4 +120,5 @@ export const GiftCardService = {
       updateGiftCardToDB,
       removePageFromGiftCard,
       createCheckoutSession,
+      getMyGiftCardsFromDB,
 };

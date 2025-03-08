@@ -51,10 +51,21 @@ const getAllGiftCards = catchAsync(async (req, res) => {
       });
 });
 
+const getMyGiftCards = catchAsync(async (req, res) => {
+      const userId = req.user?.id;
+      const result = await GiftCardService.getMyGiftCardsFromDB(userId as string);
+      res.status(200).json({
+            success: true,
+            message: 'My gift cards fetched successfully',
+            data: result,
+      });
+});
+
 export const GiftCardController = {
       createGiftCard,
       getAllGiftCards,
       updateGiftCard,
       removePage,
       createCheckoutSession,
+      getMyGiftCards,
 };
