@@ -15,7 +15,8 @@ const handleStripeWebhook = async (req: Request, res: Response) => {
             switch (event.type) {
                   case 'checkout.session.completed':
                         const session = event.data?.object;
-                        const giftCard = await GiftCard.findOne({ paymentIntentId: session.payment_intent });
+
+                        const giftCard = await GiftCard.findOne({ paymentIntentId: session.id });
                         if (!giftCard) {
                               console.log('Gift card not found');
                               return;
@@ -53,3 +54,28 @@ const handleStripeWebhook = async (req: Request, res: Response) => {
 };
 
 export default handleStripeWebhook;
+// const product = await stripe.products.create({
+//       name: 'Classic Buzzybox',
+// });
+// const price = await stripe.prices.create({
+//       product: product.id,
+//       unit_amount: 100 * 100,
+//       currency: 'usd',
+// });
+// const checkoutSession = await stripe.checkout.sessions.create({
+//       payment_method_types: ['card'],
+//       mode: 'payment',
+//       success_url: 'http://localhost:3000/success',
+//       cancel_url: 'http://localhost:3000/cancel',
+//       line_items: [
+//             {
+//                   price: price.id,
+//                   quantity: 1,
+//             },
+//       ],
+// });
+
+// payload.paymentStatus = 'pending';
+// payload.userId = userId;
+// payload.status = 'pending';
+// payload.paymentIntentId = checkoutSession.id;

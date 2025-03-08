@@ -6,17 +6,19 @@ interface IPage {
 }
 
 export interface IGiftCard {
+      uniqueId: string;
       userId: Types.ObjectId;
       category: Types.ObjectId;
-      price: number;
-      paymentIntentId: string;
-      email: string;
+      image: string;
+      price?: number;
+      paymentIntentId?: string;
+      email?: string;
       coverPage: {
             recipientName: string;
             title: string;
             senderName: string;
       };
-      pages: IPage[];
+      pages?: IPage[];
       status: 'pending' | 'active' | 'expired';
       paymentStatus: 'pending' | 'paid' | 'failed';
 }
