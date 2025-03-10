@@ -20,10 +20,12 @@ const getAllAnalysisFromDB = async () => {
 
       return { totalUsers, totalGiftCards, totalRevenue };
 };
-const getMonthlyEarningsFromDB = async () => {
+const getMonthlyEarningsFromDB = async (year: string) => {
+      const startDate = new Date(`${year}-01-01`);
+      const endDate = new Date(`${year}-12-31`);
       const monthlyRevenue = await GiftCard.aggregate([
             {
-                  $match: { paymentStatus: 'paid' },
+                  $match: { createdAt: { $gte: startDate, $lte: endDate }, paymentStatus: 'paid' },
             },
             {
                   $group: {
@@ -46,8 +48,13 @@ const getMonthlyEarningsFromDB = async () => {
       return formattedMonthlyRevenue;
 };
 
-const getMonthlyUsersFromDB = async () => {
+const getMonthlyUsersFromDB = async (year: string) => {
+      const startDate = new Date(`${year}-01-01`);
+      const endDate = new Date(`${year}-12-31`);
       const monthlyUsers = await User.aggregate([
+            {
+                  $match: { createdAt: { $gte: startDate, $lte: endDate } },
+            },
             {
                   $group: {
                         _id: { $month: '$createdAt' },
@@ -69,10 +76,13 @@ const getMonthlyUsersFromDB = async () => {
       return formattedMonthlyUsers;
 };
 
-const getMonthlyTotalGiftSendFromDB = async () => {
+const getMonthlyTotalGiftSendFromDB = async (year: string) => {
+      const startDate = new Date(`${year}-01-01`);
+      const endDate = new Date(`${year}-12-31`);
       const monthlyGiftSend = await GiftCard.aggregate([
             {
                   $match: {
+                        createdAt: { $gte: startDate, $lte: endDate },
                         paymentStatus: 'paid',
                   },
             },

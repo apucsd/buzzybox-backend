@@ -10,8 +10,8 @@ const getAllAnalysis = catchAsync(async (req, res) => {
       });
 });
 
-const getMonthlyAnalysis = catchAsync(async (req, res) => {
-      const result = await AnalysisService.getMonthlyEarningsFromDB();
+const getMonthlyEarnings = catchAsync(async (req, res) => {
+      const result = await AnalysisService.getMonthlyEarningsFromDB(req.query.year as string);
       res.status(200).json({
             success: true,
             message: 'Monthly earnings fetched successfully',
@@ -20,7 +20,7 @@ const getMonthlyAnalysis = catchAsync(async (req, res) => {
 });
 
 const getMonthlyUsers = catchAsync(async (req, res) => {
-      const result = await AnalysisService.getMonthlyUsersFromDB();
+      const result = await AnalysisService.getMonthlyUsersFromDB(req.query.year as string);
       res.status(200).json({
             success: true,
             message: 'Monthly users fetched successfully',
@@ -29,7 +29,7 @@ const getMonthlyUsers = catchAsync(async (req, res) => {
 });
 
 const getMonthlyTotalGiftSend = catchAsync(async (req, res) => {
-      const result = await AnalysisService.getMonthlyTotalGiftSendFromDB();
+      const result = await AnalysisService.getMonthlyTotalGiftSendFromDB(req.query.year as string);
       res.status(200).json({
             success: true,
             message: 'Monthly total gift send fetched successfully',
@@ -39,7 +39,7 @@ const getMonthlyTotalGiftSend = catchAsync(async (req, res) => {
 
 export const AnalysisController = {
       getAllAnalysis,
-      getMonthlyAnalysis,
+      getMonthlyEarnings,
       getMonthlyUsers,
       getMonthlyTotalGiftSend,
 };
