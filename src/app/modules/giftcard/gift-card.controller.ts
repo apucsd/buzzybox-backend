@@ -71,6 +71,16 @@ const getMyGiftCards = catchAsync(async (req, res) => {
       });
 });
 
+const deleteGiftCard = catchAsync(async (req, res) => {
+      const { id } = req.params;
+      const result = await GiftCardService.deleteGiftCardFromDB(id);
+      res.status(200).json({
+            success: true,
+            message: 'Gift card deleted successfully',
+            data: result,
+      });
+});
+
 export const GiftCardController = {
       createGiftCard,
       getAllGiftCards,
@@ -79,4 +89,5 @@ export const GiftCardController = {
       createCheckoutSession,
       getMyGiftCards,
       getGiftCardByUniqueId,
+      deleteGiftCard,
 };

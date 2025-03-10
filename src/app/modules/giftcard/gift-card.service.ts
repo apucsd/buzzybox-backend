@@ -122,6 +122,14 @@ const getMyGiftCardsFromDB = async (userId: string) => {
       return result;
 };
 
+const deleteGiftCardFromDB = async (id: string) => {
+      const result = await GiftCard.findByIdAndDelete(id);
+      if (!result) {
+            throw new Error('Card not found');
+      }
+      return result;
+};
+
 export const GiftCardService = {
       createGiftCardToDB,
       getAllGiftCardsFromDB,
@@ -130,4 +138,5 @@ export const GiftCardService = {
       createCheckoutSession,
       getMyGiftCardsFromDB,
       getGiftCardByUniqueId,
+      deleteGiftCardFromDB,
 };

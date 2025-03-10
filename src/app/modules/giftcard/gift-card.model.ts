@@ -1,5 +1,7 @@
 import { model, Schema } from 'mongoose';
 import { IGiftCard } from './gift-card.interface';
+import { StatusCodes } from 'http-status-codes';
+import ApiError from '../../../errors/ApiError';
 
 const giftCardSchema = new Schema<IGiftCard>(
       {
@@ -30,5 +32,16 @@ const giftCardSchema = new Schema<IGiftCard>(
             timestamps: true,
       }
 );
+
+giftCardSchema.post('save', async function (doc, next) {
+      if (this.isNew) {
+            const existingGiftCard = await GiftCard.findOne({ uniqueId: doc.uniqueId });
+
+            if (existingGiftCard) {
+                  throw new ApiError(StatusCodes.BAD_REQUEST, 'Gift card already exists');
+            }
+      }
+      next();
+});
 
 export const GiftCard = model<IGiftCard>('GiftCard', giftCardSchema);

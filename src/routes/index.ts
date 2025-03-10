@@ -9,6 +9,7 @@ import { HowItWorksRoutes } from '../app/modules/how-it-works/how-it-works.route
 import { ContactInfoRoutes } from '../app/modules/contact-info/contact-info.route';
 import { ReviewRoutes } from '../app/modules/review/review.route';
 import { GiftCardRoutes } from '../app/modules/giftcard/gift-card.route';
+import { AnalysisRoutes } from '../app/modules/dashboard-analysis/analysis.route';
 
 const router = express.Router();
 
@@ -53,6 +54,10 @@ const apiRoutes = [
       {
             path: '/gift-cards',
             route: GiftCardRoutes,
+      },
+      {
+            path: '/analysis',
+            route: AnalysisRoutes,
       },
 ];
 

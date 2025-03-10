@@ -14,5 +14,6 @@ router.patch('/remove-page/:id', GiftCardController.removePage);
 router.get('/my-cards', auth(USER_ROLES.USER), GiftCardController.getMyGiftCards);
 router.get('/', GiftCardController.getAllGiftCards);
 router.get('/:id', GiftCardController.getGiftCardByUniqueId);
+router.delete('/:id', auth(USER_ROLES.USER), GiftCardController.deleteGiftCard);
 
 export const GiftCardRoutes = router;
