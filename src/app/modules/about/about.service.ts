@@ -32,7 +32,7 @@ const updateAboutToDB = async (id: string, payload: IAbout, files: any) => {
 };
 
 const getAboutFromDB = async () => {
-      const result = await About.findOne({});
+      const result = await About.find({});
       if (!result) {
             throw new Error('Failed to get about');
       }

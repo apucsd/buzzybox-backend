@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { UserService } from './user.service';
+import { JwtPayload } from 'jsonwebtoken';
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
       const { ...userData } = req.body;
@@ -41,7 +42,7 @@ const createAdmin = catchAsync(async (req: Request, res: Response, next: NextFun
 
 const getUserProfile = catchAsync(async (req: Request, res: Response) => {
       const user = req.user;
-      const result = await UserService.getUserProfileFromDB(user);
+      const result = await UserService.getUserProfileFromDB(user as JwtPayload);
 
       sendResponse(res, {
             success: true,
@@ -98,7 +99,7 @@ const updateProfile = catchAsync(async (req: Request, res: Response, next: NextF
             profile,
             ...req.body,
       };
-      const result = await UserService.updateProfileToDB(user, data);
+      const result = await UserService.updateProfileToDB(user as JwtPayload, data);
 
       sendResponse(res, {
             success: true,

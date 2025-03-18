@@ -48,17 +48,6 @@ const createAdminToDB = async (payload: Partial<IUser>): Promise<IUser> => {
 
       return createUser;
 };
-// const createSuperAdminToDB = async (payload: Partial<IUser>): Promise<IUser> => {
-//     //set role
-//     payload.role = USER_ROLES.SUPER_ADMIN;
-//     payload.verified = true;
-//     const createUser = await User.create(payload);
-//     if (!createUser) {
-//         throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create super admin');
-//     }
-
-//     return createUser;
-// };
 
 const getUserProfileFromDB = async (user: JwtPayload): Promise<Partial<IUser>> => {
       const { id } = user;
@@ -146,7 +135,7 @@ const deleteAccountFromDB = async (email: string, password: string) => {
 
             {
                   new: true,
-            },
+            }
       );
 
       return result;
@@ -162,7 +151,7 @@ const updateStatusIntoDB = async (id: string, status: string) => {
 
             {
                   new: true,
-            },
+            }
       );
 
       return result;
