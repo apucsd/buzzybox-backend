@@ -10,6 +10,7 @@ import { ContactInfoRoutes } from '../app/modules/contact-info/contact-info.rout
 import { ReviewRoutes } from '../app/modules/review/review.route';
 import { GiftCardRoutes } from '../app/modules/giftcard/gift-card.route';
 import { AnalysisRoutes } from '../app/modules/dashboard-analysis/analysis.route';
+import { PaymentRoutes } from '../app/modules/payment/payment.route';
 
 const router = express.Router();
 
@@ -54,6 +55,10 @@ const apiRoutes = [
       {
             path: '/gift-cards',
             route: GiftCardRoutes,
+      },
+      {
+            path: '/payments',
+            route: PaymentRoutes,
       },
       {
             path: '/analysis',

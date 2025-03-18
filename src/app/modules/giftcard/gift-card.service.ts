@@ -1,5 +1,6 @@
 import stripe from '../../config/stripe.config';
 import { Category } from '../category/category.model';
+
 import { IGiftCard } from './gift-card.interface';
 import { GiftCard } from './gift-card.model';
 import mongoose from 'mongoose';
@@ -59,43 +60,6 @@ const removePageFromGiftCard = async (id: string, pageId: string) => {
       return result;
 };
 
-const createCheckoutSession = async (giftCardId: string) => {
-      const giftCard = await GiftCard.findById(giftCardId);
-      if (!giftCard) {
-            throw new Error('Gift card not found');
-      }
-
-      const product = await stripe.products.create({
-            name: 'Classic Buzzybox',
-      });
-      const price = await stripe.prices.create({
-            product: product.id,
-            unit_amount: 5 * 100,
-            currency: 'usd',
-      });
-      const checkoutSession = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            mode: 'payment',
-            success_url: 'http://localhost:3000',
-            cancel_url: 'http://localhost:3000',
-            line_items: [
-                  {
-                        price: price.id,
-                        quantity: 1,
-                  },
-            ],
-      });
-      giftCard.paymentIntentId = checkoutSession.id;
-
-      await giftCard.save();
-
-      return {
-            url: checkoutSession.url,
-            paymentIntentId: checkoutSession.payment_intent,
-            giftCardId: giftCard._id,
-      };
-};
-
 const getGiftCardByUniqueId = async (id: string) => {
       const result = await GiftCard.findOne({ uniqueId: id });
       if (!result) {
@@ -130,13 +94,39 @@ const deleteGiftCardFromDB = async (id: string) => {
       return result;
 };
 
+const countGiftCardsByUserFromDB = async (query: Record<string, any>) => {
+      const giftCardCounts = await GiftCard.aggregate([
+            { $match: { paymentStatus: 'paid' } }, // Filter for paid gift cards
+            { $group: { _id: '$userId', totalGiftCard: { $sum: 1 } } },
+            {
+                  $lookup: {
+                        from: 'users',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: 'user',
+                  },
+            },
+            { $unwind: '$user' },
+            {
+                  $project: {
+                        _id: 0,
+                        user: 1,
+                        giftCardCount: '$totalGiftCard',
+                  },
+            },
+      ]).exec();
+
+      return giftCardCounts;
+};
+
 export const GiftCardService = {
       createGiftCardToDB,
       getAllGiftCardsFromDB,
       updateGiftCardToDB,
       removePageFromGiftCard,
-      createCheckoutSession,
+
       getMyGiftCardsFromDB,
       getGiftCardByUniqueId,
       deleteGiftCardFromDB,
+      countGiftCardsByUserFromDB,
 };
