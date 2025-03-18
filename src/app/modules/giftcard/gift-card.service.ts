@@ -1,3 +1,4 @@
+import QueryBuilder from '../../../builder/QueryBuilder';
 import stripe from '../../config/stripe.config';
 import { Category } from '../category/category.model';
 
@@ -95,28 +96,36 @@ const deleteGiftCardFromDB = async (id: string) => {
 };
 
 const countGiftCardsByUserFromDB = async (query: Record<string, any>) => {
-      const giftCardCounts = await GiftCard.aggregate([
-            { $match: { paymentStatus: 'paid' } }, // Filter for paid gift cards
-            { $group: { _id: '$userId', totalGiftCard: { $sum: 1 } } },
-            {
-                  $lookup: {
-                        from: 'users',
-                        localField: '_id',
-                        foreignField: '_id',
-                        as: 'user',
-                  },
-            },
-            { $unwind: '$user' },
-            {
-                  $project: {
-                        _id: 0,
-                        user: 1,
-                        giftCardCount: '$totalGiftCard',
-                  },
-            },
-      ]).exec();
+      const giftCardQuery = GiftCard.find({ paymentStatus: 'paid' }).populate({
+            path: 'userId',
+            match: query.searchTerm
+                  ? {
+                          $or: [
+                                { email: { $regex: query.searchTerm, $options: 'i' } },
+                                { name: { $regex: query.searchTerm, $options: 'i' } },
+                          ],
+                    }
+                  : {},
+      });
 
-      return giftCardCounts;
+      const queryBuilder = new QueryBuilder(giftCardQuery, query).sort().paginate();
+
+      const result = await queryBuilder.modelQuery;
+      const meta = await queryBuilder.countTotal();
+
+      // Filter out documents where userId is null (due to population match)
+      const filteredResult = result.filter((card) => card.userId !== null);
+
+      // Transform the data to match the required format
+      const formattedData = filteredResult.map((card) => ({
+            user: card.userId,
+            giftCardCount: 1,
+      }));
+
+      return {
+            meta,
+            result: formattedData,
+      };
 };
 
 export const GiftCardService = {
@@ -124,7 +133,6 @@ export const GiftCardService = {
       getAllGiftCardsFromDB,
       updateGiftCardToDB,
       removePageFromGiftCard,
-
       getMyGiftCardsFromDB,
       getGiftCardByUniqueId,
       deleteGiftCardFromDB,

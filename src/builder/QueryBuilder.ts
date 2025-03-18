@@ -18,7 +18,7 @@ class QueryBuilder<T> {
                               (field) =>
                                     ({
                                           [field]: { $regex: searchTerm, $options: 'i' },
-                                    } as any),
+                                    } as any)
                         ),
                   });
             }
@@ -67,7 +67,7 @@ class QueryBuilder<T> {
                   ...fieldString
                         .split(',')
                         .map((f) => f.trim())
-                        .filter((f) => f),
+                        .filter((f) => f)
             );
             return this;
       }
