@@ -33,9 +33,10 @@ const giftCardSchema = new Schema<IGiftCard>(
       }
 );
 
-giftCardSchema.post('save', async function (doc, next) {
+// Use pre-save hook instead of post-save to check for duplicates before saving
+giftCardSchema.pre('save', async function (next) {
       if (this.isNew) {
-            const existingGiftCard = await GiftCard.findOne({ uniqueId: doc.uniqueId });
+            const existingGiftCard = await GiftCard.findOne({ uniqueId: this.uniqueId });
 
             if (existingGiftCard) {
                   throw new ApiError(StatusCodes.BAD_REQUEST, 'Gift card already exists');
@@ -43,5 +44,4 @@ giftCardSchema.post('save', async function (doc, next) {
       }
       next();
 });
-
 export const GiftCard = model<IGiftCard>('GiftCard', giftCardSchema);

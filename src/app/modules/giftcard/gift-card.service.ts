@@ -96,7 +96,7 @@ const deleteGiftCardFromDB = async (id: string) => {
 };
 
 const countGiftCardsByUserFromDB = async (query: Record<string, any>) => {
-      const giftCardQuery = GiftCard.find({ paymentStatus: 'paid' }).populate({
+      const giftCardQuery = GiftCard.find().populate({
             path: 'userId',
             match: query.searchTerm
                   ? {
@@ -116,11 +116,23 @@ const countGiftCardsByUserFromDB = async (query: Record<string, any>) => {
       // Filter out documents where userId is null (due to population match)
       const filteredResult = result.filter((card) => card.userId !== null);
 
-      // Transform the data to match the required format
-      const formattedData = filteredResult.map((card) => ({
-            user: card.userId,
-            giftCardCount: 1,
-      }));
+      // Create a map to count gift cards per user
+      const userCardCountMap = new Map<string, { user: any; giftCardCount: number }>();
+
+      filteredResult.forEach((card) => {
+            const userId = card.userId._id.toString();
+            if (userCardCountMap.has(userId)) {
+                  userCardCountMap.get(userId)!.giftCardCount += 1;
+            } else {
+                  userCardCountMap.set(userId, {
+                        user: card.userId,
+                        giftCardCount: 1,
+                  });
+            }
+      });
+
+      // Convert map to array
+      const formattedData = Array.from(userCardCountMap.values());
 
       return {
             meta,
