@@ -15,7 +15,7 @@ const createGiftCardToDB = async (payload: IGiftCard, userId: string) => {
 
             payload.userId = new mongoose.Types.ObjectId(userId);
             payload.image = category.occasionImage;
-            payload.price = 5; // static price
+            payload.price = 5;
             const result = await GiftCard.create(payload);
             if (!result) {
                   throw new Error('Failed to create gift card');
@@ -94,52 +94,49 @@ const deleteGiftCardFromDB = async (id: string) => {
       }
       return result;
 };
+const countGiftCardsByUserFromDB = async (searchTerm: string) => {
+      const regexSearchTerm = typeof searchTerm === 'string' ? searchTerm : '';
+      const result = await GiftCard.aggregate([
+            {
+                  $lookup: {
+                        from: 'users',
+                        localField: 'userId',
+                        foreignField: '_id',
+                        as: 'user',
+                  },
+            },
+            {
+                  $unwind: '$user',
+            },
+            {
+                  $match: {
+                        $or: [
+                              { 'user.name': { $regex: regexSearchTerm, $options: 'i' } },
+                              { 'user.email': { $regex: regexSearchTerm, $options: 'i' } },
+                        ],
+                  },
+            },
+            {
+                  $group: {
+                        _id: '$userId',
+                        user: { $first: '$user' },
+                        count: { $sum: 1 },
+                  },
+            },
+            {
+                  $project: {
+                        _id: 0,
+                        userId: '$_id',
+                        user: 1,
+                        count: 1,
+                  },
+            },
+      ]).exec();
 
-const countGiftCardsByUserFromDB = async (query: Record<string, any>) => {
-      const giftCardQuery = GiftCard.find().populate({
-            path: 'userId',
-            match: query.searchTerm
-                  ? {
-                          $or: [
-                                { email: { $regex: query.searchTerm, $options: 'i' } },
-                                { name: { $regex: query.searchTerm, $options: 'i' } },
-                          ],
-                    }
-                  : {},
-      });
+      console.log('Aggregation Result:', result);
 
-      const queryBuilder = new QueryBuilder(giftCardQuery, query).sort().paginate();
-
-      const result = await queryBuilder.modelQuery;
-      const meta = await queryBuilder.countTotal();
-
-      // Filter out documents where userId is null (due to population match)
-      const filteredResult = result.filter((card) => card.userId !== null);
-
-      // Create a map to count gift cards per user
-      const userCardCountMap = new Map<string, { user: any; giftCardCount: number }>();
-
-      filteredResult.forEach((card) => {
-            const userId = card.userId._id.toString();
-            if (userCardCountMap.has(userId)) {
-                  userCardCountMap.get(userId)!.giftCardCount += 1;
-            } else {
-                  userCardCountMap.set(userId, {
-                        user: card.userId,
-                        giftCardCount: 1,
-                  });
-            }
-      });
-
-      // Convert map to array
-      const formattedData = Array.from(userCardCountMap.values());
-
-      return {
-            meta,
-            result: formattedData,
-      };
+      return result;
 };
-
 export const GiftCardService = {
       createGiftCardToDB,
       getAllGiftCardsFromDB,

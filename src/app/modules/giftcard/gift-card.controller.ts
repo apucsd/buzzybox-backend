@@ -79,7 +79,7 @@ const deleteGiftCard = catchAsync(async (req, res) => {
 });
 
 const countGiftCards = catchAsync(async (req, res) => {
-      const result = await GiftCardService.countGiftCardsByUserFromDB(req.query);
+      const result = await GiftCardService.countGiftCardsByUserFromDB(req.query.searchTerm as string);
 
       sendResponse(res, {
             statusCode: 200,

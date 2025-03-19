@@ -11,4 +11,12 @@ const createCheckoutSession = catchAsync(async (req, res) => {
             data: result,
       });
 });
-export const PaymentController = { createCheckoutSession };
+const getAllTransactions = catchAsync(async (req, res) => {
+      const result = await PaymentService.getAllTransactionsFromDB(req.query);
+      res.status(200).json({
+            success: true,
+            message: 'Transactions retrieved successfully',
+            data: result,
+      });
+});
+export const PaymentController = { createCheckoutSession, getAllTransactions };

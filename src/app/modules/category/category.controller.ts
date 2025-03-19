@@ -2,8 +2,6 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { CategoryService } from './category.service';
-import config from '../../../config';
-import unlinkFile from '../../../shared/unlinkFile';
 
 const createCategory = catchAsync(async (req, res) => {
       if (req.files && 'categoryImage' in req.files) {
