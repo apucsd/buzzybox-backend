@@ -131,6 +131,22 @@ const countGiftCardsByUserFromDB = async (query: Record<string, any>) => {
                   },
             },
             {
+                  $project: {
+                        user: {
+                              _id: 1,
+                              name: 1,
+                              email: 1,
+
+                              profile: 1,
+                              status: 1,
+                              verified: 1,
+
+                              contact: 1,
+                        },
+                        totalGiftCards: 1,
+                  },
+            },
+            {
                   $facet: {
                         metadata: [{ $count: 'total' }, { $addFields: { page, limit } }],
                         data: [{ $sort: { [sortBy]: sortOrder } }, { $skip: skip }, { $limit: limit }],

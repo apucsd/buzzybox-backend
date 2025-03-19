@@ -1,4 +1,3 @@
-import QueryBuilder from '../../../builder/QueryBuilder';
 import stripe from '../../config/stripe.config';
 import { GiftCard } from '../giftcard/gift-card.model';
 
@@ -39,8 +38,13 @@ const createCheckoutSession = async (giftCardId: string) => {
       };
 };
 
-const getAllTransactionsFromDB = async (searchTerm: string) => {
-      const regexSearchTerm = typeof searchTerm === 'string' ? searchTerm : '';
+const getAllTransactionsFromDB = async (query: Record<string, any>) => {
+      const page = Number(query.page) || 1;
+      const limit = Number(query.limit) || 10;
+      const skip = (page - 1) * limit;
+      const sortBy = query.sortBy || 'user.name';
+      const sortOrder = query.sortOrder === 'desc' ? -1 : 1;
+      const regexSearchTerm = typeof query.searchTerm === 'string' ? query.searchTerm : '';
       const result = await GiftCard.aggregate([
             {
                   $lookup: {
@@ -61,22 +65,58 @@ const getAllTransactionsFromDB = async (searchTerm: string) => {
                         ],
                   },
             },
-            {
-                  $group: {
-                        _id: '$userId',
-                        user: { $first: '$user' },
-                        count: { $sum: 1 },
-                  },
-            },
+
             {
                   $project: {
-                        _id: 0,
-                        userId: '$_id',
-                        user: 1,
-                        count: 1,
+                        _id: 1,
+                        user: {
+                              _id: 1,
+                              name: 1,
+                              email: 1,
+                              profile: 1,
+                              status: 1,
+                              contact: 1,
+                        },
+                        giftCardId: 1,
+                        paymentIntentId: 1,
+                        amount: 1,
+                        price: 1,
+                        paymentStatus: 1,
+                        coverPage: 1,
+                  },
+            },
+
+            {
+                  $facet: {
+                        metadata: [{ $count: 'total' }, { $addFields: { page, limit } }],
+                        data: [{ $sort: { [sortBy]: sortOrder } }, { $skip: skip }, { $limit: limit }],
+                  },
+            },
+            { $unwind: '$metadata' },
+            {
+                  $project: {
+                        data: 1,
+                        meta: {
+                              page: '$metadata.page',
+                              limit: '$metadata.limit',
+                              total: '$metadata.total',
+                              totalPage: { $ceil: { $divide: ['$metadata.total', '$metadata.limit'] } },
+                        },
                   },
             },
       ]).exec();
+
+      if (!result) {
+            return {
+                  meta: {
+                        page,
+                        limit,
+                        total: 0,
+                        totalPage: 0,
+                  },
+                  data: [],
+            };
+      }
 
       return result;
 };

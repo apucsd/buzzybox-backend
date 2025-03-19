@@ -29,7 +29,7 @@ const userSchema = new Schema<IUser, UserModal>(
             password: {
                   type: String,
                   required: true,
-                  select: 0,
+                  select: false,
                   minlength: 8,
             },
             location: {
@@ -61,13 +61,21 @@ const userSchema = new Schema<IUser, UserModal>(
                         expireAt: {
                               type: Date,
                               default: null,
+                              select: false,
                         },
                   },
-                  select: 0,
+                  select: false,
             },
       },
-      { timestamps: true },
+      { timestamps: true }
 );
+
+userSchema.methods.toJSON = function () {             
+      const user = this.toObject();
+      delete user.password; // Remove password field
+      delete user.authentication; // Remove authentication field
+      return user;
+};
 
 //exist user check
 userSchema.statics.isExistUserById = async (id: string) => {
