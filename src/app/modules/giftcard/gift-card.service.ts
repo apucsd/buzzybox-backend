@@ -15,7 +15,7 @@ const createGiftCardToDB = async (payload: IGiftCard, userId: string) => {
 
             payload.userId = new mongoose.Types.ObjectId(userId);
             payload.image = category.occasionImage;
-            payload.price = 5;
+            payload.price = 5; // static price
             const result = await GiftCard.create(payload);
             if (!result) {
                   throw new Error('Failed to create gift card');
@@ -94,9 +94,16 @@ const deleteGiftCardFromDB = async (id: string) => {
       }
       return result;
 };
-const countGiftCardsByUserFromDB = async (searchTerm: string) => {
-      const regexSearchTerm = typeof searchTerm === 'string' ? searchTerm : '';
-      const result = await GiftCard.aggregate([
+
+const countGiftCardsByUserFromDB = async (query: Record<string, any>) => {
+      const page = Number(query.page) || 1;
+      const limit = Number(query.limit) || 10;
+      const skip = (page - 1) * limit;
+      const sortBy = query.sortBy || 'user.name';
+      const sortOrder = query.sortOrder === 'desc' ? -1 : 1;
+      const regexSearchTerm = typeof query.searchTerm === 'string' ? query.searchTerm : '';
+
+      const aggregationPipeline: any[] = [
             {
                   $lookup: {
                         from: 'users',
@@ -105,38 +112,64 @@ const countGiftCardsByUserFromDB = async (searchTerm: string) => {
                         as: 'user',
                   },
             },
+            { $unwind: '$user' },
             {
-                  $unwind: '$user',
-            },
-            {
-                  $match: {
-                        $or: [
-                              { 'user.name': { $regex: regexSearchTerm, $options: 'i' } },
-                              { 'user.email': { $regex: regexSearchTerm, $options: 'i' } },
-                        ],
-                  },
+                  $match: regexSearchTerm
+                        ? {
+                                $or: [
+                                      { 'user.name': { $regex: regexSearchTerm, $options: 'i' } },
+                                      { 'user.email': { $regex: regexSearchTerm, $options: 'i' } },
+                                ],
+                          }
+                        : {},
             },
             {
                   $group: {
                         _id: '$userId',
                         user: { $first: '$user' },
-                        count: { $sum: 1 },
+                        totalGiftCards: { $sum: 1 },
                   },
             },
             {
-                  $project: {
-                        _id: 0,
-                        userId: '$_id',
-                        user: 1,
-                        count: 1,
+                  $facet: {
+                        metadata: [{ $count: 'total' }, { $addFields: { page, limit } }],
+                        data: [{ $sort: { [sortBy]: sortOrder } }, { $skip: skip }, { $limit: limit }],
                   },
             },
-      ]).exec();
+            { $unwind: '$metadata' },
+            {
+                  $project: {
+                        data: 1,
+                        meta: {
+                              page: '$metadata.page',
+                              limit: '$metadata.limit',
+                              total: '$metadata.total',
+                              totalPage: { $ceil: { $divide: ['$metadata.total', '$metadata.limit'] } },
+                        },
+                  },
+            },
+      ];
 
-      console.log('Aggregation Result:', result);
+      const [result] = await GiftCard.aggregate(aggregationPipeline);
 
-      return result;
+      if (!result) {
+            return {
+                  meta: {
+                        page,
+                        limit,
+                        total: 0,
+                        totalPage: 0,
+                  },
+                  data: [],
+            };
+      }
+
+      return {
+            meta: result.meta,
+            data: result.data,
+      };
 };
+
 export const GiftCardService = {
       createGiftCardToDB,
       getAllGiftCardsFromDB,

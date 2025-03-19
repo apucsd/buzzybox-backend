@@ -39,30 +39,45 @@ const createCheckoutSession = async (giftCardId: string) => {
       };
 };
 
-const getAllTransactionsFromDB = async (query: Record<string, any>) => {
-      const giftCardQuery = GiftCard.find().populate({
-            path: 'userId',
-            match: query.searchTerm
-                  ? {
-                          $or: [
-                                { email: { $regex: query.searchTerm, $options: 'i' } },
-                                { name: { $regex: query.searchTerm, $options: 'i' } },
-                          ],
-                    }
-                  : {},
-      });
+const getAllTransactionsFromDB = async (searchTerm: string) => {
+      const regexSearchTerm = typeof searchTerm === 'string' ? searchTerm : '';
+      const result = await GiftCard.aggregate([
+            {
+                  $lookup: {
+                        from: 'users',
+                        localField: 'userId',
+                        foreignField: '_id',
+                        as: 'user',
+                  },
+            },
+            {
+                  $unwind: '$user',
+            },
+            {
+                  $match: {
+                        $or: [
+                              { 'user.name': { $regex: regexSearchTerm, $options: 'i' } },
+                              { 'user.email': { $regex: regexSearchTerm, $options: 'i' } },
+                        ],
+                  },
+            },
+            {
+                  $group: {
+                        _id: '$userId',
+                        user: { $first: '$user' },
+                        count: { $sum: 1 },
+                  },
+            },
+            {
+                  $project: {
+                        _id: 0,
+                        userId: '$_id',
+                        user: 1,
+                        count: 1,
+                  },
+            },
+      ]).exec();
 
-      const queryBuilder = new QueryBuilder(giftCardQuery, query)
-            .populateFields('userId')
-            .search(['name', 'userId.name', 'userId.email'])
-            .sort()
-            .paginate();
-
-      const result = await queryBuilder.modelQuery;
-      const meta = await queryBuilder.countTotal();
-      return {
-            meta,
-            result,
-      };
+      return result;
 };
 export const PaymentService = { createCheckoutSession, getAllTransactionsFromDB };
