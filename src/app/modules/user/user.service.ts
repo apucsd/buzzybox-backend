@@ -48,6 +48,28 @@ const createAdminToDB = async (payload: Partial<IUser>): Promise<IUser> => {
 
       return createUser;
 };
+const updateAdminToDB = async (id: string, payload: Partial<IUser>): Promise<IUser | null> => {
+      const isExistUser = await User.isExistUserById(id);
+      if (!isExistUser) {
+            throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+      }
+
+      const updateDoc = await User.findOneAndUpdate({ _id: id }, payload, {
+            new: true,
+      });
+
+      return updateDoc;
+};
+const deleteAdminToDB = async (id: string): Promise<IUser | null> => {
+      const isExistUser = await User.isExistUserById(id);
+      if (!isExistUser) {
+            throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+      }
+
+      const deleteDoc = await User.findOneAndDelete({ _id: id });
+
+      return deleteDoc;
+};
 
 const getUserProfileFromDB = async (user: JwtPayload): Promise<Partial<IUser>> => {
       const { id } = user;
@@ -165,7 +187,8 @@ export const UserService = {
       getUserByIdFromDB,
       deleteAccountFromDB,
       createAdminToDB,
-      // createSuperAdminToDB,
+      updateAdminToDB,
+      deleteAdminToDB,
       getAllAdminFromDB,
       updateStatusIntoDB,
 };

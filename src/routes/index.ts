@@ -11,6 +11,7 @@ import { ReviewRoutes } from '../app/modules/review/review.route';
 import { GiftCardRoutes } from '../app/modules/giftcard/gift-card.route';
 import { AnalysisRoutes } from '../app/modules/dashboard-analysis/analysis.route';
 import { PaymentRoutes } from '../app/modules/payment/payment.route';
+import { PrivacyPolicyRoutes } from '../app/modules/privacy-policy/pp.route';
 
 const router = express.Router();
 
@@ -63,6 +64,10 @@ const apiRoutes = [
       {
             path: '/analysis',
             route: AnalysisRoutes,
+      },
+      {
+            path: '/privacy-policy',
+            route: PrivacyPolicyRoutes,
       },
 ];
 

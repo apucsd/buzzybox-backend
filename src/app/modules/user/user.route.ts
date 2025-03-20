@@ -15,9 +15,12 @@ router.route('/create-user').post(validateRequest(UserValidation.createUserZodSc
 router.route('/create-admin').post(
       auth(USER_ROLES.SUPER_ADMIN),
       validateRequest(UserValidation.createUserZodSchema),
-      UserController.createAdmin,
+      UserController.createAdmin
 );
-//create a new super admin
+// get all admins
+router.route('/all-admin').get(auth(USER_ROLES.SUPER_ADMIN), UserController.getAllAdmin);
+router.patch('/update-admin/:id', auth(USER_ROLES.SUPER_ADMIN), UserController.updateAdmin);
+router.delete('/delete-admin/:id', auth(USER_ROLES.SUPER_ADMIN), UserController.deleteAdmin);
 
 // router
 //     .route('/create-super-admin')
@@ -26,24 +29,21 @@ router.route('/create-admin').post(
 router.route('/update-status/:id').patch(
       auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
       validateRequest(UserValidation.userStatusZodSchema),
-      UserController.updateStatus,
+      UserController.updateStatus
 );
 
 // update user profile
 router.route('/update-profile').patch(
       auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.USER),
       fileUploadHandler(),
-      UserController.updateProfile,
+      UserController.updateProfile
 );
 // get all users
 router.route('/all-user').get(auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), UserController.getAllUsers);
-// get all admins
-router.route('/all-admin').get(auth(USER_ROLES.SUPER_ADMIN), UserController.getAllAdmin);
 
 //get single user by id
 router.route('/:id').get(auth(USER_ROLES.ADMIN, USER_ROLES.USER), UserController.getUserById);
 
 //  delete user account
-
 router.route('/delete-account').patch(auth(USER_ROLES.ADMIN, USER_ROLES.USER), UserController.deleteAccount);
 export const UserRoutes = router;

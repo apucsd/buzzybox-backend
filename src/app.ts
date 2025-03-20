@@ -9,22 +9,25 @@ import handleStripeWebhook from './webhook/handleStripeWebhook';
 const app = express();
 
 //morgan
-app.use(Morgan.successHandler);
-app.use(Morgan.errorHandler);
-
-app.post('/api/v1/stripe/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 app.use(
       cors({
-            origin: ['http://10.0.70.128:3004'],
+            origin: ['http://10.0.70.128:3004', 'http://localhost:3000'],
             credentials: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+            allowedHeaders: ['Content-Type', 'Authorization'],
+            optionsSuccessStatus: 200,
       })
 );
+
+app.use(Morgan.successHandler);
+app.use(Morgan.errorHandler);
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('uploads'));
+app.post('/api/v1/stripe/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 app.use('/api/v1', router);
 

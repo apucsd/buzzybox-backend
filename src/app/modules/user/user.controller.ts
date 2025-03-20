@@ -28,6 +28,30 @@ const createAdmin = catchAsync(async (req: Request, res: Response, next: NextFun
             data: result,
       });
 });
+
+const updateAdmin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const id = req.params.id;
+      const data = req.body;
+      const result = await UserService.updateAdminToDB(id, data);
+
+      sendResponse(res, {
+            success: true,
+            statusCode: StatusCodes.OK,
+            message: 'Admin updated successfully',
+            data: result,
+      });
+});
+const deleteAdmin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const id = req.params.id;
+      const result = await UserService.deleteAdminToDB(id);
+
+      sendResponse(res, {
+            success: true,
+            statusCode: StatusCodes.OK,
+            message: 'Admin deleted successfully',
+            data: result,
+      });
+});
 // const createSuperAdmin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 //     const { ...userData } = req.body;
 //     const result = await UserService.createSuperAdminToDB(userData);
@@ -140,8 +164,9 @@ export const UserController = {
       getAllUsers,
       getUserById,
       deleteAccount,
+      deleteAdmin,
       createAdmin,
-      // createSuperAdmin,
+      updateAdmin,
       getAllAdmin,
       updateStatus,
 };
