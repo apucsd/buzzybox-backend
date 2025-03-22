@@ -136,6 +136,7 @@ const updateProfile = catchAsync(async (req: Request, res: Response, next: NextF
 const deleteAccount = catchAsync(async (req: Request, res: Response) => {
       const email = req.body.email;
       const password = req.body.password;
+
       const result = await UserService.deleteAccountFromDB(email, password);
       sendResponse(res, {
             success: true,

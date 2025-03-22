@@ -13,6 +13,7 @@ import { AnalysisRoutes } from '../app/modules/dashboard-analysis/analysis.route
 import { PaymentRoutes } from '../app/modules/payment/payment.route';
 import { PrivacyPolicyRoutes } from '../app/modules/privacy-policy/pp.route';
 import { TermsAndConditionsRoutes } from '../app/modules/terms-and-conditions/tc.route';
+import { InviteRoutes } from '../app/modules/invite/invite.route';
 
 const router = express.Router();
 
@@ -73,6 +74,10 @@ const apiRoutes = [
       {
             path: '/terms-and-conditions',
             route: TermsAndConditionsRoutes,
+      },
+      {
+            path: '/invites',
+            route: InviteRoutes,
       },
 ];
 

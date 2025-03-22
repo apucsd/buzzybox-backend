@@ -1,12 +1,6 @@
-import { IPP } from './pp.interface';
 import { PrivacyPolicy } from './pp.model';
-
-const createPrivacyPolicyToDB = async (payload: IPP) => {
-      console.log(payload);
-      const result = await PrivacyPolicy.findOneAndReplace({ content: payload.content }, payload, {
-            new: true,
-            upsert: true,
-      });
+const createPrivacyPolicyToDB = async (payload: { content: string }) => {
+      const result = await PrivacyPolicy.findOneAndUpdate({}, { content: payload.content }, { new: true, upsert: true });
 
       return result;
 };

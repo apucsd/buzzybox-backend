@@ -141,26 +141,30 @@ const updateProfileToDB = async (user: JwtPayload, payload: Partial<IUser>): Pro
 };
 
 const deleteAccountFromDB = async (email: string, password: string) => {
-      const isExistUser = await User.findOne({ email }).select('+password');
-      //check match password
-      if (password && isExistUser && !(await User.isMatchPassword(password, isExistUser.password))) {
+      // Validate required fields
+      if (!email) {
+            throw new ApiError(StatusCodes.BAD_REQUEST, 'Email is required!');
+      }
+      if (!password) {
+            throw new ApiError(StatusCodes.BAD_REQUEST, 'Password is required!');
+      }
+
+      // Find the user by email and include the password field
+      const user = await User.findOne({ email }).select('+password');
+      if (!user) {
+            throw new ApiError(StatusCodes.NOT_FOUND, 'Email password pair not found!');
+      }
+
+      // Verify the password
+      const isPasswordValid = await User.isMatchPassword(password, user.password);
+      if (!isPasswordValid) {
             throw new ApiError(StatusCodes.BAD_REQUEST, 'Password is incorrect!');
       }
 
-      const result = await User.findOneAndUpdate(
-            { email: isExistUser?.email },
-            {
-                  $set: {
-                        status: 'delete',
-                  },
-            },
+      // Delete the user account
+      const deletedUser = await User.findOneAndUpdate({ email }, { $set: { status: 'delete' } }, { new: true });
 
-            {
-                  new: true,
-            }
-      );
-
-      return result;
+      return deletedUser;
 };
 const updateStatusIntoDB = async (id: string, status: string) => {
       const result = await User.findOneAndUpdate(

@@ -3,16 +3,20 @@ import { TermsAndConditions } from './tc.model';
 
 const createTermsAndConditionsToDB = async (payload: TC) => {
       console.log(payload);
-      const result = await TermsAndConditions.findOneAndReplace({ content: payload.content }, payload, {
-            new: true,
-            upsert: true,
-      });
+      const result = await TermsAndConditions.findOneAndReplace(
+            {},
+            { content: payload.content },
+            {
+                  new: true,
+                  upsert: true,
+            }
+      );
 
       return result;
 };
 
 const getTermsAndConditionsFromDB = async () => {
-      const result = await TermsAndConditions.find({});
+      const result = await TermsAndConditions.find();
       return result[0];
 };
 
