@@ -30,10 +30,10 @@ const updateGiftCardToDB = async (payload: Partial<IGiftCard> & { page: any }, i
       let newPage: any = payload.page ? JSON.parse(payload.page as string) : null;
 
       if (files && 'image' in files) {
-            payload.image = `/${files.image[0].filename}`;
+            payload.image = `/images/${files.image[0].filename}`;
       }
       if (files && 'pageImage' in files) {
-            newPage.image = `/${files.pageImage[0].filename}`;
+            newPage.image = `/images/${files.pageImage[0].filename}`;
       }
 
       const giftCard = await GiftCard.findById(id);
@@ -41,14 +41,15 @@ const updateGiftCardToDB = async (payload: Partial<IGiftCard> & { page: any }, i
             throw new Error('Gift card not found');
       }
 
-      const result = await GiftCard.findByIdAndUpdate(
-            id,
-            {
-                  $push: { pages: newPage },
-                  ...payload,
-            },
-            { new: true }
-      );
+      const updateObject: any = { ...payload };
+
+      // If a new page is provided, push it to the pages array
+      if (newPage) {
+            updateObject.$push = { pages: newPage };
+      }
+
+      // Update the gift card in the database
+      const result = await GiftCard.findByIdAndUpdate(id, updateObject, { new: true });
 
       return result;
 };

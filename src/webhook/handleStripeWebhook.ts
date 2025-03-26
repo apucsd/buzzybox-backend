@@ -15,6 +15,7 @@ const handleStripeWebhook = async (req: Request, res: Response) => {
             switch (event.type) {
                   case 'checkout.session.completed':
                         const session = event.data?.object;
+                        // console.log(session, 'session===================================');
 
                         const giftCard = await GiftCard.findOne({ paymentIntentId: session.id });
                         if (!giftCard) {

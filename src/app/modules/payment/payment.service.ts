@@ -18,8 +18,8 @@ const createCheckoutSession = async (giftCardId: string) => {
       const checkoutSession = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'payment',
-            success_url: 'http://localhost:3000',
-            cancel_url: 'http://localhost:3000',
+            success_url: 'http://10.0.70.128:3004/dashboard/gift-history',
+            cancel_url: 'http://10.0.70.128:3004/dashboard/gift-history',
             line_items: [
                   {
                         price: price.id,
@@ -27,13 +27,15 @@ const createCheckoutSession = async (giftCardId: string) => {
                   },
             ],
       });
+      console.log({ checkoutSession }, 'checkoutSession');
+
       giftCard.paymentIntentId = checkoutSession.id;
 
       await giftCard.save();
 
       return {
             url: checkoutSession.url,
-            paymentIntentId: checkoutSession.payment_intent,
+            paymentIntentId: checkoutSession.id,
             giftCardId: giftCard._id,
       };
 };

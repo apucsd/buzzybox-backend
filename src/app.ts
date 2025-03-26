@@ -10,9 +10,10 @@ const app = express();
 
 //morgan
 
+app.post('/api/v1/stripe/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 app.use(
       cors({
-            origin: ['http://10.0.70.128:3004', 'http://localhost:3000'],
+            origin: ['http://10.0.70.128:3004', 'http://localhost:3000', 'http://10.0.70.128:3002'],
             credentials: true,
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
             allowedHeaders: ['Content-Type', 'Authorization'],
@@ -27,7 +28,6 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('uploads'));
-app.post('/api/v1/stripe/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 app.use('/api/v1', router);
 
