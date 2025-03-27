@@ -115,10 +115,92 @@ const invite = (values: { email: string; name: string; message: string; link: st
       return data;
 };
 
+const sendGiftCardEmail = (values: { email: string; name: string; giftCardUrl: string; message?: string }) => {
+      const data = {
+            to: values.email,
+            subject: '🎁 Your Special Gift Card from BuzzyBox!',
+            html: `
+        <body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #f4f4f4; width: 100%; padding: 0;">
+          <table width="100%" bgcolor="#f4f4f4" cellpadding="0" cellspacing="0" style="padding: 40px 0;">
+            <tr>
+              <td align="center" style="padding: 20px;">
+                <table width="100%" max-width="800px" bgcolor="#ffffff" cellpadding="0" cellspacing="0" style="border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.1); padding: 40px; text-align: center;">
+                
+                  <!-- Logo -->
+                  <tr>
+                    <td align="center">
+                      <img src="https://res.cloudinary.com/ddhhyc6mr/image/upload/v1742293522/buzzy-box-logo.png" alt="BuzzyBox Logo" width="150" style="margin-bottom: 20px;">
+                    </td>
+                  </tr>
+    
+                  <!-- Greeting -->
+                  <tr>
+                    <td align="center" style="font-size: 28px; font-weight: bold; color: #333; margin-bottom: 20px;">
+                      🎉 Surprise, ${values.name}! 🎉
+                    </td>
+                  </tr>
+    
+                  <!-- Message Introduction -->
+                  <tr>
+                    <td align="center" style="font-size: 18px; color: #555; line-height: 1.6; padding: 0 20px;">
+                      You have received a special <strong>gift card</strong> from <strong>BuzzyBox</strong>! 
+                      Click the button below to view and redeem your gift.
+                    </td>
+                  </tr>
+    
+                  <!-- Personal Message (Conditional) -->
+                  ${
+                        values.message
+                              ? `
+                    <tr>
+                      <td align="center" style="background-color: #f1f1f1; padding: 20px; border-radius: 8px; font-size: 16px; color: #333; margin-top: 30px; width: 80%; max-width: 700px;">
+                        <em style="font-style: italic;">"${values.message}"</em>
+                      </td>
+                    </tr>
+                  `
+                              : ''
+                  }
+    
+                  <!-- Button -->
+                  <tr>
+                    <td align="center" style="padding: 30px 0;">
+                      <a href="${
+                            values.giftCardUrl
+                      }" style="background-color: #ff9800; color: #ffffff; font-size: 20px; font-weight: bold; padding: 14px 30px; text-decoration: none; border-radius: 8px; display: inline-block; transition: all 0.3s;">
+                        🎁 View Your Gift Card
+                      </a>
+                    </td>
+                  </tr>
+    
+                  <!-- Closing Message -->
+                  <tr>
+                    <td align="center" style="font-size: 18px; color: #555; line-height: 1.6; padding: 0 20px;">
+                      We hope this gift makes your day extra special! ✨ Enjoy! 💖
+                    </td>
+                  </tr>
+    
+                  <!-- Footer -->
+                  <tr>
+                    <td align="center" style="font-size: 14px; color: #777; padding-top: 20px;">
+                      <strong>Thanks!</strong><br>Your friends at <strong>BuzzyBox</strong>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+      `,
+      };
+
+      return data;
+};
+
 export const emailTemplate = {
       createAccount,
       resetPassword,
       resetOtp,
       contact,
       invite,
+      sendGiftCardEmail,
 };

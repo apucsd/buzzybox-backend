@@ -1,12 +1,25 @@
 import { z } from 'zod';
+export interface IPayment {
+      giftCardId: string;
+      emailScheduleDate: Date;
+      message?: string;
+      receiverEmail: string;
+      url: string;
+}
 
 const createCheckoutSessionZodSchema = z.object({
       giftCardId: z.string({ required_error: 'Gift card ID is required' }),
-      emailScheduleDate: z.coerce.date().refine((date) => date > new Date(), {
-            message: 'Date must be in the future',
-      }),
+      emailScheduleDate: z.coerce.date().refine(
+            (date) => {
+                  const now = new Date();
+                  return date > now;
+            },
+            {
+                  message: 'Date must be in the future',
+            }
+      ),
       message: z.string().optional(),
-      email: z.string().email({
+      receiverEmail: z.string().email({
             message: 'Invalid email address format',
       }),
       url: z.string().url({

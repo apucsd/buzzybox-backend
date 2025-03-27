@@ -3,6 +3,9 @@ import stripe from '../app/config/stripe.config';
 import config from '../config';
 import { GiftCard } from '../app/modules/giftcard/gift-card.model';
 import Stripe from 'stripe';
+import { emailTemplate } from '../shared/emailTemplate';
+import { emailHelper } from '../helpers/emailHelper';
+import schedule from 'node-schedule';
 
 const handleStripeWebhook = async (req: Request, res: Response) => {
       const signature = req.headers['stripe-signature'];
@@ -22,8 +25,26 @@ const handleStripeWebhook = async (req: Request, res: Response) => {
                               console.log('Gift card not found');
                               return;
                         }
-                        giftCard.status = 'active';
+                        giftCard.status = 'sent';
                         giftCard.paymentStatus = 'paid';
+
+                        const emailScheduleDate = giftCard.receiverInfo!.emailScheduleDate;
+                        const receiverScheduleEmail = emailTemplate.sendGiftCardEmail({
+                              email: giftCard.receiverInfo!.receiverEmail as string,
+                              name: giftCard.coverPage.senderName,
+                              giftCardUrl: giftCard?.receiverInfo?.url as string,
+                              message: giftCard?.receiverInfo?.message as string,
+                        });
+
+                        const emailJob = schedule.scheduleJob(emailScheduleDate as Date, async () => {
+                              try {
+                                    await emailHelper.sendEmail(receiverScheduleEmail);
+                              } catch (emailError) {
+                                    console.error('Error sending email:', emailError);
+                              }
+                        });
+                        emailJob.emit('');
+
                         await giftCard.save();
                         console.log('Gift card status updated successfully');
 

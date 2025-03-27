@@ -1,8 +1,9 @@
+import { IPayment } from './payment.validation';
 import stripe from '../../config/stripe.config';
 import { GiftCard } from '../giftcard/gift-card.model';
 
-const createCheckoutSession = async (giftCardId: string) => {
-      const giftCard = await GiftCard.findById(giftCardId);
+const createCheckoutSession = async (payload: IPayment) => {
+      const giftCard = await GiftCard.findById(payload.giftCardId);
       if (!giftCard) {
             throw new Error('Gift card not found');
       }
@@ -27,10 +28,32 @@ const createCheckoutSession = async (giftCardId: string) => {
                   },
             ],
       });
-      console.log({ checkoutSession }, 'checkoutSession');
 
+      // const emailJob = schedule.scheduleJob(payload.emailScheduleDate, async () => {
+      //       try {
+      //             const sendGiftCardEmail = emailTemplate.sendGiftCardEmail({
+      //                   email: payload.email!,
+      //                   name: giftCard.coverPage.senderName,
+      //                   giftCardUrl: payload.url,
+      //                   message: payload.message,
+      //             });
+
+      //             await emailHelper.sendEmail(sendGiftCardEmail);
+      //       } catch (emailError) {
+      //             console.error('Error sending email:', emailError);
+      //       }
+      // });
+      // emailJob.emit('');
+
+      giftCard.status = 'pending';
+      giftCard.paymentStatus = 'pending';
       giftCard.paymentIntentId = checkoutSession.id;
-
+      giftCard.receiverInfo = {
+            receiverEmail: payload.receiverEmail,
+            emailScheduleDate: payload.emailScheduleDate,
+            message: payload.message,
+            url: payload.url,
+      };
       await giftCard.save();
 
       return {

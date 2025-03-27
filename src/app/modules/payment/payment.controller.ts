@@ -5,14 +5,13 @@ import { PaymentValidation } from './payment.validation';
 // checkout
 const createCheckoutSession = catchAsync(async (req, res) => {
       const validatedData = await PaymentValidation.createCheckoutSessionZodSchema.parseAsync(req.body);
-      console.log(validatedData, 'validatedData');
 
-      // const result = await PaymentService.createCheckoutSession(validatedData.giftCardId);
-      // res.status(200).json({
-      //       success: true,
-      //       message: 'Checkout session created successfully',
-      //       data: result,
-      // });
+      const result = await PaymentService.createCheckoutSession(validatedData);
+      res.status(200).json({
+            success: true,
+            message: 'Checkout session created successfully',
+            data: result,
+      });
 });
 const getAllTransactions = catchAsync(async (req, res) => {
       const result = await PaymentService.getAllTransactionsFromDB(req.query);

@@ -12,13 +12,18 @@ export interface IGiftCard {
       image: string;
       price?: number;
       paymentIntentId?: string;
-      email?: string;
+      receiverInfo?: {
+            receiverEmail?: string;
+            emailScheduleDate?: Date;
+            message?: string;
+            url?: string;
+      };
       coverPage: {
             recipientName: string;
             title: string;
             senderName: string;
       };
       pages?: IPage[];
-      status: 'pending' | 'active' | 'expired';
+      status: 'pending' | 'sent' | 'expired';
       paymentStatus: 'pending' | 'paid' | 'failed';
 }
