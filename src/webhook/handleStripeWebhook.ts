@@ -18,36 +18,40 @@ const handleStripeWebhook = async (req: Request, res: Response) => {
             switch (event.type) {
                   case 'checkout.session.completed':
                         const session = event.data?.object;
-                        // console.log(session, 'session===================================');
 
                         const giftCard = await GiftCard.findOne({ paymentIntentId: session.id });
                         if (!giftCard) {
                               console.log('Gift card not found');
                               return;
                         }
-                        giftCard.status = 'sent';
                         giftCard.paymentStatus = 'paid';
 
-                        const emailScheduleDate = giftCard.receiverInfo!.emailScheduleDate;
+                        let emailScheduleDate = new Date(giftCard.receiverInfo!.emailScheduleDate as Date);
+                        if (emailScheduleDate < new Date()) {
+                              console.warn('Email schedule date is in the past. Sending immediately.');
+                              emailScheduleDate = new Date(new Date().getTime() + 1 * 60 * 1000); // Send in 1 min if past
+                        }
+
                         const receiverScheduleEmail = emailTemplate.sendGiftCardEmail({
                               email: giftCard.receiverInfo!.receiverEmail as string,
                               name: giftCard.coverPage.senderName,
-                              giftCardUrl: giftCard?.receiverInfo?.url as string,
-                              message: giftCard?.receiverInfo?.message as string,
+                              giftCardUrl: giftCard.receiverInfo!.url as string,
+                              message: giftCard.receiverInfo!.message as string,
                         });
 
-                        const emailJob = schedule.scheduleJob(emailScheduleDate as Date, async () => {
+                        schedule.scheduleJob(emailScheduleDate, async () => {
                               try {
                                     await emailHelper.sendEmail(receiverScheduleEmail);
+                                    giftCard.status = 'sent';
+                                    await giftCard.save();
+                                    console.log('Scheduled email sent successfully');
                               } catch (emailError) {
-                                    console.error('Error sending email:', emailError);
+                                    console.error('Error sending scheduled email:', emailError);
                               }
                         });
-                        emailJob.emit('');
 
                         await giftCard.save();
                         console.log('Gift card status updated successfully');
-
                         break;
 
                   case 'payment_intent.payment_failed':
@@ -64,6 +68,7 @@ const handleStripeWebhook = async (req: Request, res: Response) => {
                         await giftCardFailed.deleteOne();
                         console.log('Gift card deleted due to failed payment');
                         break;
+
                   default:
                         console.log(`Unhandled event type: ${event.type}`);
             }
@@ -76,28 +81,3 @@ const handleStripeWebhook = async (req: Request, res: Response) => {
 };
 
 export default handleStripeWebhook;
-// const product = await stripe.products.create({
-//       name: 'Classic Buzzybox',
-// });
-// const price = await stripe.prices.create({
-//       product: product.id,
-//       unit_amount: 100 * 100,
-//       currency: 'usd',
-// });
-// const checkoutSession = await stripe.checkout.sessions.create({
-//       payment_method_types: ['card'],
-//       mode: 'payment',
-//       success_url: 'http://localhost:3000/success',
-//       cancel_url: 'http://localhost:3000/cancel',
-//       line_items: [
-//             {
-//                   price: price.id,
-//                   quantity: 1,
-//             },
-//       ],
-// });
-
-// payload.paymentStatus = 'pending';
-// payload.userId = userId;
-// payload.status = 'pending';
-// payload.paymentIntentId = checkoutSession.id;

@@ -76,10 +76,15 @@ const fileUploadHandler = () => {
                   file.fieldname === 'userImage' ||
                   file.fieldname === 'pageImage'
             ) {
-                  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
+                  if (
+                        file.mimetype === 'image/jpeg' ||
+                        file.mimetype === 'image/png' ||
+                        file.mimetype === 'image/jpg' ||
+                        file.mimetype === 'image/webp'
+                  ) {
                         cb(null, true);
                   } else {
-                        throw new ApiError(StatusCodes.BAD_REQUEST, 'Only .jpeg, .png, .jpg file supported');
+                        throw new ApiError(StatusCodes.BAD_REQUEST, 'Only .jpeg, .png, .jpg .webp file supported');
                   }
             } else if (file.fieldname === 'media') {
                   if (file.mimetype === 'video/mp4' || file.mimetype === 'audio/mpeg') {

@@ -3,6 +3,7 @@ import stripe from '../../config/stripe.config';
 import { GiftCard } from '../giftcard/gift-card.model';
 
 const createCheckoutSession = async (payload: IPayment) => {
+      console.log(payload, 'payload');
       const giftCard = await GiftCard.findById(payload.giftCardId);
       if (!giftCard) {
             throw new Error('Gift card not found');

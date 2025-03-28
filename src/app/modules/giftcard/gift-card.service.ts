@@ -1,10 +1,11 @@
-import QueryBuilder from '../../../builder/QueryBuilder';
-import stripe from '../../config/stripe.config';
+import { emailHelper } from '../../../helpers/emailHelper';
+import { emailTemplate } from '../../../shared/emailTemplate';
 import { Category } from '../category/category.model';
 
 import { IGiftCard } from './gift-card.interface';
 import { GiftCard } from './gift-card.model';
 import mongoose from 'mongoose';
+import cron from 'node-cron';
 
 const createGiftCardToDB = async (payload: IGiftCard, userId: string) => {
       try {
